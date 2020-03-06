@@ -4,9 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,20 +22,15 @@ public class TouchService extends Service implements View.OnTouchListener {
     private ImageView mTouch;
     private int DOWN_X, DOWN_Y,MOVE_X,MOVE_Y,xparam,yparam;
     private LinearLayout mLinearLayout;
-    private boolean mDown, mUp, mMove;
-    private int mCountClick;
+    private boolean mDown, mUp;
+    //private int mCountClick;
     public TouchService() {
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("huynhDebug", "onCreate: huynhpdv.android.touch.service.TouchService");
+        //Log.d("huynhDebug", "onCreate: huynhpdv.android.touch.service.TouchService");
         initView();
     }
     private void initView() {
@@ -71,10 +64,15 @@ public class TouchService extends Service implements View.OnTouchListener {
         mWindowManager.removeView(mLinearLayout);
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Log.d("huynhDebug", "onTouch: ");
+        //Log.d("huynhDebug", "onTouch: ");
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 mDown = true;
@@ -82,19 +80,21 @@ public class TouchService extends Service implements View.OnTouchListener {
                 yparam = mLayoutParams.y;
                 DOWN_X = (int)event.getRawX();
                 DOWN_Y = (int)event.getRawY();
+                break;
             case MotionEvent.ACTION_UP:
                 mUp = true;
+                onClickTouch();
                 break;
             case MotionEvent.ACTION_MOVE:
-                mMove = true;
+                mUp = false;
+                mDown = false;
                 MOVE_X = (int) event.getRawX()- DOWN_X ;
                 MOVE_Y = (int) event.getRawY()- DOWN_Y ;
                 updateView(MOVE_X, MOVE_Y);
                 break;
 
         }
-        Log.d("huynhDebug", "onTouch: end");
-        onClickTouch();
+        //Log.d("huynhDebug", "onTouch: end " + mDown + " " +mUp);
         return true;
     }
     private void updateView(int x, int y) {
@@ -104,13 +104,20 @@ public class TouchService extends Service implements View.OnTouchListener {
     }
 
     private void onClickTouch() {
-        if (mUp && mDown && !mMove) {
-            mCountClick ++;
-            Log.d("huynhDebug", "onClickTouch: đã click " + mCountClick);
+        if (mUp && mDown) {
+            mUp = false;
+            mDown = false;
+           // mCountClick ++;
+            //Log.d("huynhDebug", "onClickTouch: đã click " + mCountClick);
+            Intent startMain = new Intent(Intent.ACTION_MAIN);
+            startMain.addCategory(Intent.CATEGORY_HOME);
+            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(startMain);
 
         }
-        mUp = mMove = mDown = false;
+
     }
+
 
 }
 

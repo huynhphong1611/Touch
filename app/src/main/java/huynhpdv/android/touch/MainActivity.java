@@ -15,6 +15,7 @@ import huynhpdv.android.touch.service.TouchService;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button mOn;
     private Button mOff;
+    private static int REQUESTCODE = 999;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!Settings.canDrawOverlays(this)) {
             Intent myIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
-            startActivityForResult(myIntent, 999);
+            startActivityForResult(myIntent, REQUESTCODE);
             return false;
         }
         return true;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 999) {
+        if (requestCode == REQUESTCODE) {
             checkPermission();
         }
     }
